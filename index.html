@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đào tạo iEMS — Viettel Networks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,600;0,700;0,800;0,900;1,300&family=Barlow:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E30613;
+    --red-dark: #B30000;
+    --red-glow: rgba(227,6,19,0.18);
+    --black: #0A0A0A;
+    --dark: #111111;
+    --surface: #181818;
+    --surface2: #222222;
+    --gray1: #4A4A4A;
+    --gray2: #7F7F7F;
+    --gray3: #CCCCCC;
+    --gray4: #F5F5F5;
+    --white: #FFFFFF;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .nav-brand span { color: var(--red); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 3px 10px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 48px 80px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0A0A0A 0%, #1a0000 50%, #0A0A0A 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(227,6,19,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(227,6,19,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at 60% 40%, black 30%, transparent 75%);
+  }
+  .hero-accent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--red);
+  }
+  .hero-circle {
+    position: absolute;
+    right: -200px; top: 50%;
+    transform: translateY(-50%);
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    border: 1px solid rgba(227,6,19,0.12);
+    animation: rotate 40s linear infinite;
+  }
+  .hero-circle::before {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(227,6,19,0.08);
+  }
+  .hero-circle::after {
+    content: '';
+    position: absolute;
+    top: 20%; left: -2px;
+    width: 5px; height: 5px;
+    background: var(--red);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--red);
+  }
+  @keyframes rotate { to { transform: translateY(-50%) rotate(360deg); } }
+
+  .hero-content { position: relative; z-index: 2; max-width: 720px; }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: var(--red);
+  }
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(72px, 11vw, 128px);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-title .outline {
+    -webkit-text-stroke: 2px rgba(255,255,255,0.15);
+    color: transparent;
+  }
+  .hero-title .red { color: var(--red); }
+  .hero-subtitle {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--gray2);
+    letter-spacing: 0.04em;
+    margin-top: 24px;
+    margin-bottom: 48px;
+    max-width: 480px;
+    line-height: 1.6;
+  }
+  .hero-cta {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  }
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--gray3);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid var(--gray1);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: var(--white); }
+
+  .hero-stats {
+    position: absolute;
+    right: 48px; bottom: 80px;
+    display: flex; gap: 48px;
+    z-index: 2;
+  }
+  .stat { text-align: right; }
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--white);
+  }
+  .stat-num span { color: var(--red); }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--gray2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px; left: 48px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--gray1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .scroll-hint-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--red), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  /* ── SECTION COMMON ── */
+  section { position: relative; z-index: 1; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(36px, 5vw, 56px);
+    text-transform: uppercase;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── PROTOCOLS ── */
+  #protocols {
+    padding: 120px 48px;
+    background: var(--black);
+  }
+  .protocols-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 32px;
+  }
+  .protocols-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+  .protocol-card {
+    background: var(--dark);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+    cursor: default;
+  }
+  .protocol-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--red);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s;
+  }
+  .protocol-card:hover { background: var(--surface); }
+  .protocol-card:hover::before { transform: scaleY(1); }
+  .protocol-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .protocol-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 48px;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  .protocol-specs { list-style: none; }
+  .protocol-specs li {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+  }
+  .protocol-specs li:last-child { border-bottom: none; }
+  .spec-key { color: var(--gray2); font-weight: 300; }
+  .spec-val {
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-align: right;
+    max-width: 55%;
+  }
+  .protocol-bg-num {
+    position: absolute;
+    bottom: -20px; right: -10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 140px;
+    color: rgba(255,255,255,0.02);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ── EQUIPMENT TABLE ── */
+  #equipment {
+    padding: 120px 48px;
+    background: var(--dark);
+  }
+  .equip-header { margin-bottom: 56px; }
+  .equip-table { width: 100%; border-collapse: collapse; }
+  .equip-table thead tr {
+    background: var(--red);
+  }
+  .equip-table th {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    padding: 14px 20px;
+    text-align: left;
+  }
+  .equip-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.2s;
+  }
+  .equip-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+  .equip-table tbody tr:hover { background: rgba(227,6,19,0.06); }
+  .equip-table td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--gray3);
+  }
+  .equip-table td:first-child {
+    color: var(--white);
+    font-weight: 600;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+  }
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    background: rgba(227,6,19,0.12);
+    color: var(--red);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── PROCESS ── */
+  #process {
+    padding: 120px 48px;
+    background: var(--black);
+  }
+  .process-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    margin-top: 64px;
+  }
+  .process-steps { }
+  .step {
+    display: flex;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--white);
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    transition: transform 0.2s;
+  }
+  .step:hover .step-num { transform: scale(1.1); }
+  .step-body {}
+  .step-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 13px;
+    color: var(--gray2);
+    line-height: 1.6;
+  }
+  .step-code {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 6px;
+  }
+
+  .sensor-panel {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .sensor-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--red);
+  }
+  .sensor-panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .sensor-panel-sub {
+    font-size: 13px;
+    color: var(--gray2);
+    margin-bottom: 32px;
+  }
+  .sensor-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .sensor-item:last-child { border-bottom: none; }
+  .sensor-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+    box-shadow: 0 0 8px var(--red-glow);
+  }
+  .sensor-text {
+    font-size: 14px;
+    color: var(--gray3);
+    line-height: 1.5;
+  }
+  .sensor-text strong { color: var(--white); font-weight: 600; }
+
+  /* ── CHAPTERS ── */
+  #chapters {
+    padding: 120px 48px;
+    background: var(--dark);
+  }
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 56px;
+  }
+  .chapter-card {
+    position: relative;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.05);
+    padding: 32px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .chapter-card:hover {
+    border-color: rgba(227,6,19,0.4);
+    transform: translateY(-4px);
+  }
+  .chapter-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 1;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    top: 16px; right: 24px;
+    transition: color 0.3s;
+  }
+  .chapter-card:hover .chapter-num { color: rgba(227,6,19,0.08); }
+  .chapter-index {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    margin-bottom: 16px;
+  }
+  .chapter-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .chapter-sub {
+    font-size: 13px;
+    color: var(--gray2);
+    line-height: 1.6;
+  }
+
+  /* ── OUTCOME ── */
+  #outcome {
+    padding: 120px 48px;
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+  }
+  #outcome::before {
+    content: '';
+    position: absolute;
+    bottom: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(227,6,19,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .outcome-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 64px;
+  }
+  .outcome-list { }
+  .outcome-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.2s;
+  }
+  .outcome-item:last-child { border-bottom: none; }
+  .outcome-check {
+    width: 28px; height: 28px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: var(--white);
+    font-weight: 700;
+  }
+  .outcome-text {
+    font-size: 15px;
+    color: var(--gray3);
+    line-height: 1.6;
+    padding-top: 3px;
+  }
+  .outcome-text strong { color: var(--white); }
+
+  .credits-panel {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 40px;
+  }
+  .credits-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .credits-row:last-child { border-bottom: none; }
+  .cr-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--gray2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cr-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--white);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--red);
+    padding: 24px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+  .footer-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.08em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── DIVIDER ── */
+  .divider-line {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fade-up:nth-child(2) { transition-delay: 0.1s; }
+  .fade-up:nth-child(3) { transition-delay: 0.2s; }
+  .fade-up:nth-child(4) { transition-delay: 0.3s; }
+  .fade-up:nth-child(5) { transition-delay: 0.4s; }
+  .fade-up:nth-child(6) { transition-delay: 0.5s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px 80px; }
+    .hero-stats { right: 24px; bottom: 80px; gap: 24px; }
+    .stat-num { font-size: 32px; }
+    #protocols, #equipment, #process, #chapters, #outcome { padding: 80px 24px; }
+    .protocols-grid, .chapters-grid { grid-template-columns: 1fr; }
+    .process-layout, .outcome-layout { grid-template-columns: 1fr; gap: 48px; }
+    .protocols-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+    .footer-info { text-align: center; }
+    .hero-circle { right: -350px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Viettel <span>Networks</span></div>
+  <ul class="nav-links">
+    <li><a href="#protocols">Giao thức</a></li>
+    <li><a href="#equipment">Thiết bị</a></li>
+    <li><a href="#process">Quy trình</a></li>
+    <li><a href="#chapters">Nội dung</a></li>
+    <li><a href="#outcome">Kết quả</a></li>
+  </ul>
+  <div class="nav-badge">iEMS 2021</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-circle"></div>
+
+  <div class="hero-content">
+    <div class="hero-label">VTNet · TTKT KV2 · Phòng Cơ Điện</div>
+    <h1 class="hero-title">
+      <div class="outline">Đào tạo</div>
+      <div class="red">iEMS</div>
+    </h1>
+    <p class="hero-subtitle">Hệ thống Giám sát Hạ tầng Điện — Cơ · Khai báo, cấu hình và xử lý lỗi thiết bị qua giao thức SNMP, RS232, RS485</p>
+    <div class="hero-cta">
+      <a href="#protocols" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Bắt đầu học
+      </a>
+      <a href="#chapters" class="btn-ghost">Xem nội dung ↓</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">0<span>6</span></div>
+      <div class="stat-label">Chương học</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0<span>5</span></div>
+      <div class="stat-label">Loại tủ nguồn</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0<span>3</span></div>
+      <div class="stat-label">Giao thức</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-hint-line"></div>
+    Cuộn xuống
+  </div>
+</section>
+
+<!-- PROTOCOLS -->
+<section id="protocols">
+  <div class="protocols-header fade-up">
+    <div>
+      <div class="section-label">Chương 01</div>
+      <h2 class="section-title">Chuẩn Truyền<br>Dữ liệu</h2>
+    </div>
+    <p style="max-width:340px; font-size:14px; color:var(--gray2); line-height:1.7; text-align:right;">
+      Ba giao thức nền tảng được sử dụng trong hệ thống iEMS để kết nối và thu thập dữ liệu từ các thiết bị điện cơ tại trạm.
+    </p>
+  </div>
+
+  <div class="protocols-grid">
+    <div class="protocol-card fade-up">
+      <div class="protocol-tag">Serial · Point-to-Point</div>
+      <div class="protocol-name">RS<span style="color:var(--red)">232</span></div>
+      <ul class="protocol-specs">
+        <li><span class="spec-key">Loại truyền</span><span class="spec-val">Nối tiếp, 1 bit/thời điểm</span></li>
+        <li><span class="spec-key">Tốc độ baud</span><span class="spec-val">9600 – 115200 bps</span></li>
+        <li><span class="spec-key">Cấu trúc</span><span class="spec-val">Start + Data + Parity + Stop</span></li>
+        <li><span class="spec-key">Khoảng cách</span><span class="spec-val">Tối đa 15 m</span></li>
+        <li><span class="spec-key">Đấu nối</span><span class="spec-val">Pin2: Rx · Pin3: Tx · Pin5: GND</span></li>
+      </ul>
+      <div class="protocol-bg-num">232</div>
+    </div>
+
+    <div class="protocol-card fade-up">
+      <div class="protocol-tag">Balanced · Multi-drop</div>
+      <div class="protocol-name">RS<span style="color:var(--red)">485</span></div>
+      <ul class="protocol-specs">
+        <li><span class="spec-key">Loại truyền</span><span class="spec-val">Cân bằng 2 dây A/B</span></li>
+        <li><span class="spec-key">Tốc độ max</span><span class="spec-val">10 Mbit/s</span></li>
+        <li><span class="spec-key">Khoảng cách</span><span class="spec-val">Tối đa 1200 m</span></li>
+        <li><span class="spec-key">Thiết bị</span><span class="spec-val">Tối đa 32 nodes</span></li>
+        <li><span class="spec-key">Giao thức</span><span class="spec-val">Modbus RTU</span></li>
+      </ul>
+      <div class="protocol-bg-num">485</div>
+    </div>
+
+    <div class="protocol-card fade-up">
+      <div class="protocol-tag">TCP/IP · Network Mgmt</div>
+      <div class="protocol-name">SN<span style="color:var(--red)">MP</span></div>
+      <ul class="protocol-specs">
+        <li><span class="spec-key">Nền tảng</span><span class="spec-val">TCP/IP · Ethernet</span></li>
+        <li><span class="spec-key">Port Trap</span><span class="spec-val">162</span></li>
+        <li><span class="spec-key">Port Agent</span><span class="spec-val">161</span></li>
+        <li><span class="spec-key">Community</span><span class="spec-val">public / private</span></li>
+        <li><span class="spec-key">Cấu trúc</span><span class="spec-val">IP + Port + Community + OID</span></li>
+      </ul>
+      <div class="protocol-bg-num">v2</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-line"></div>
+
+<!-- EQUIPMENT TABLE -->
+<section id="equipment">
+  <div class="equip-header fade-up">
+    <div class="section-label">Chương 02 — 03</div>
+    <h2 class="section-title">Thông số SNMP<br>Các loại tủ nguồn</h2>
+  </div>
+
+  <table class="equip-table fade-up">
+    <thead>
+      <tr>
+        <th>Hãng sản xuất</th>
+        <th>Loại trạm</th>
+        <th>Community Read</th>
+        <th>Community Write</th>
+        <th>Trap Port</th>
+        <th>Agent Port</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Agisson</td>
+        <td><span class="tag">Macro</span></td>
+        <td>public</td>
+        <td>private</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>Emerson M500D</td>
+        <td><span class="tag">Macro</span></td>
+        <td>public</td>
+        <td>private</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>Eltek</td>
+        <td><span class="tag">Macro</span></td>
+        <td>public</td>
+        <td>public</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>ZTE CSU500</td>
+        <td><span class="tag">Macro</span></td>
+        <td>public</td>
+        <td>private</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>Huawei SMU02B</td>
+        <td><span class="tag">Macro</span></td>
+        <td>read</td>
+        <td>write</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>Emerson 820B</td>
+        <td><span class="tag">Macro</span></td>
+        <td>public</td>
+        <td>public</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+      <tr>
+        <td>Emerson Vertiv</td>
+        <td><span class="tag">RRU</span></td>
+        <td>public</td>
+        <td>private</td>
+        <td>162</td>
+        <td>161</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top:20px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--gray1);">
+    * Kiểm tra kết nối bằng lệnh ping trước khi khai báo SNMP. Trap address: DNG/TTH/QTI → 10.60.131.33 · Tỉnh khác → 10.60.131.3
+  </p>
+</section>
+
+<div class="divider-line"></div>
+
+<!-- PROCESS -->
+<section id="process">
+  <div style="margin-bottom:0" class="fade-up">
+    <div class="section-label">Chương 02 — ZTE CSU500</div>
+    <h2 class="section-title">Quy trình<br>Khai báo SNMP</h2>
+  </div>
+
+  <div class="process-layout">
+    <div class="process-steps">
+      <div class="step fade-up">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Khai báo SNMP Tool</div>
+          <div class="step-desc">Truy cập giao diện quản trị iEMS, thêm thiết bị với địa chỉ IP theo quy hoạch mạng.</div>
+        </div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Cài đặt địa chỉ IP</div>
+          <div class="step-desc">Vào menu Network Settings tại tủ nguồn.</div>
+          <div class="step-code">Password: 0063</div>
+        </div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">SNMP Community</div>
+          <div class="step-desc">Thiết lập xác thực cho kết nối SNMP.</div>
+          <div class="step-code">Read: public · Write: private</div>
+        </div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">SNMP Trap Address</div>
+          <div class="step-desc">Cấu hình địa chỉ nhận cảnh báo theo vùng địa lý.</div>
+          <div class="step-code">DNG/TTH/QTI: 10.60.131.33 · Khác: 10.60.131.3</div>
+        </div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Trap & Agent Port</div>
+          <div class="step-desc">Xác nhận cổng giao tiếp SNMP chuẩn.</div>
+          <div class="step-code">Trap Port-1#: 162 · Agent Port: 161</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sensor-panel fade-up">
+      <div class="sensor-panel-title">Đấu nối Sensor<br>Nhiệt độ</div>
+      <div class="sensor-panel-sub">ZTE CSU500 · Emerson · Huawei</div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text"><strong>01 sensor</strong> → cắm vào vị trí X6</div>
+      </div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text"><strong>02 sensor</strong> → cắm vào X6 và X10</div>
+      </div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text">Bật CB của accu sau khi đấu nối hoàn tất</div>
+      </div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text">Cấu hình dung lượng tổ accu <strong>(Battery Cap.)</strong></div>
+      </div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text">Enable sensor nhiệt độ: <strong>Temp 1 → BattTemp</strong></div>
+      </div>
+      <div class="sensor-item">
+        <div class="sensor-dot"></div>
+        <div class="sensor-text">Kiểm tra giá trị hiển thị, lưu cấu hình trước khi thoát</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-line"></div>
+
+<!-- CHAPTERS -->
+<section id="chapters">
+  <div class="fade-up">
+    <div class="section-label">Tổng quan tài liệu</div>
+    <h2 class="section-title">06 Chương<br>Đào tạo</h2>
+  </div>
+
+  <div class="chapters-grid">
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">01</div>
+      <div class="chapter-index">CHƯƠNG · 01</div>
+      <div class="chapter-title">Tổng quan Chuẩn Truyền Dữ liệu</div>
+      <div class="chapter-sub">RS232, RS485 và SNMP — ba giao thức nền tảng trong hệ thống giám sát hạ tầng điện cơ Viettel.</div>
+    </div>
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">02</div>
+      <div class="chapter-index">CHƯƠNG · 02</div>
+      <div class="chapter-title">Khai báo Giám sát Trạm Macro</div>
+      <div class="chapter-sub">Agisson, Emerson M500D, ZTE CSU500, Huawei SMU02B — cấu hình IP, SNMP, sensor nhiệt.</div>
+    </div>
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">03</div>
+      <div class="chapter-index">CHƯƠNG · 03</div>
+      <div class="chapter-title">Khai báo Giám sát Trạm RRU</div>
+      <div class="chapter-sub">Tủ nguồn Emerson Vertiv — cấu hình IP qua menu Settings, khai báo sensor BattTemp.</div>
+    </div>
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">04</div>
+      <div class="chapter-index">CHƯƠNG · 04</div>
+      <div class="chapter-title">Giám sát & Xử lý lỗi Bộ VAC</div>
+      <div class="chapter-sub">Bộ biến đổi AC/DC — quy trình khai báo giám sát và xử lý cảnh báo lỗi trên hệ thống iEMS.</div>
+    </div>
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">05</div>
+      <div class="chapter-index">CHƯƠNG · 05</div>
+      <div class="chapter-title">Khai báo Công tơ Điện tử</div>
+      <div class="chapter-sub">Điện năng kế — cấu hình kết nối và khai báo giám sát công tơ điện tử qua iEMS.</div>
+    </div>
+    <div class="chapter-card fade-up">
+      <div class="chapter-num">06</div>
+      <div class="chapter-index">CHƯƠNG · 06</div>
+      <div class="chapter-title">Khai báo Máy phát Điện</div>
+      <div class="chapter-sub">Genset monitoring — kết nối, cấu hình và theo dõi trạng thái máy phát điện qua hệ thống iEMS.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-line"></div>
+
+<!-- OUTCOME -->
+<section id="outcome">
+  <div class="fade-up">
+    <div class="section-label">Sau khoá đào tạo</div>
+    <h2 class="section-title">Kết quả<br>Đào tạo iEMS</h2>
+  </div>
+
+  <div class="outcome-layout">
+    <div class="outcome-list">
+      <div class="outcome-item fade-up">
+        <div class="outcome-check">✓</div>
+        <div class="outcome-text">Nắm vững <strong>chuẩn giao thức RS232, RS485, SNMP</strong> và cách cấu hình trên thiết bị thực tế</div>
+      </div>
+      <div class="outcome-item fade-up">
+        <div class="outcome-check">✓</div>
+        <div class="outcome-text">Khai báo thành thạo tủ nguồn các hãng: <strong>Agisson, Emerson, ZTE CSU500, Huawei</strong></div>
+      </div>
+      <div class="outcome-item fade-up">
+        <div class="outcome-check">✓</div>
+        <div class="outcome-text">Cài đặt và giám sát <strong>tủ nguồn trạm RRU Emerson Vertiv</strong> trên hệ thống iEMS</div>
+      </div>
+      <div class="outcome-item fade-up">
+        <div class="outcome-check">✓</div>
+        <div class="outcome-text">Xử lý lỗi kết nối SNMP, <strong>phân đoạn và kiểm tra bằng lệnh ping</strong></div>
+      </div>
+      <div class="outcome-item fade-up">
+        <div class="outcome-check">✓</div>
+        <div class="outcome-text">Đấu nối và khai báo <strong>sensor nhiệt độ ắc-quy</strong> đúng quy trình tại trạm</div>
+      </div>
+    </div>
+
+    <div class="credits-panel fade-up">
+      <div style="margin-bottom:28px">
+        <div class="section-label" style="margin-bottom:8px">Thông tin tài liệu</div>
+        <div style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:24px; text-transform:uppercase;">Đào tạo iEMS<br>VTNet · TTKT KV2</div>
+      </div>
+      <div class="credits-row">
+        <span class="cr-key">Trình bày</span>
+        <span class="cr-val">Nguyễn Tri Tình</span>
+      </div>
+      <div class="credits-row">
+        <span class="cr-key">Đơn vị</span>
+        <span class="cr-val">VTNet–TTKT KV2</span>
+      </div>
+      <div class="credits-row">
+        <span class="cr-key">Phòng</span>
+        <span class="cr-val">Phòng Cơ Điện</span>
+      </div>
+      <div class="credits-row">
+        <span class="cr-key">Năm</span>
+        <span class="cr-val">2021</span>
+      </div>
+      <div class="credits-row">
+        <span class="cr-key">Phạm vi</span>
+        <span class="cr-val">Nội bộ VTNet</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Công ty Mạng lưới Viettel (VTNet)</div>
+  <div class="footer-info">
+    Trung tâm Kỹ thuật KV2 · Phòng Cơ Điện<br>
+    Tài liệu đào tạo nội bộ · 2021
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for fade-up animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
